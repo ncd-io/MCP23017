@@ -1,4 +1,4 @@
-#Usage
+# Usage
 
 This library provides a class that reads and controls the MCP23017. The MCP23017.ino file serves as an example use case.
 
