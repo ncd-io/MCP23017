@@ -19,7 +19,7 @@ RelayController.setRelays(16);
 ```
 
 Set which inputs should be pulled up (if any)
-This method expects to ints that are essentially bit maps, each bit represents a channel, the set bits indicate the channel should be pulled high.
+This method expects two ints that are essentially bit maps, each bit represents a channel, the set bits indicate the channel should be pulled high.
 ```cpp
 RelayController.setInputs(0, 128);
 ```
