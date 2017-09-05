@@ -46,6 +46,30 @@ toggle_gpio(bank, target_gpio)
 >The bank argument passed is an integer, either 1 or 2.
 >The target_gpio argument passed is an ingteger from 0-7 with 0 being the first GPIO on the chain.
 
+```cpp
+set_gpio_high_by_index(target_gpio)
+```
+>This method will set the given GPIO high.
+>The target_gpio argument passed to this method is an integer from 0 to 15 that indicates the position of the GPIO from the
+>index of zero.
+>If you would like simple control of relays without worrying about banks, this is the recommended way to do it.
+
+```cpp
+set_gpio_low_by_index(target_gpio)
+```
+>This method will set the given GPIO low.
+>The target_gpio argument passed to this method is an integer from 0 to 15 that indicates the position of the GPIO from the
+>index of zero.
+>If you would like simple control of relays without worrying about banks, this is the recommended way to do it.
+
+```cpp
+toggle_gpio_by_index(bank, target_gpio)
+```
+>This method will toggle the given GPIO. If the GPIO is high then it will be set low. If it is low then it will be set high.
+>The target_gpio argument passed to this method is an integer from 0 to 15 that indicates the position of the GPIO from the
+>index of zero.
+>If you would like simple control of relays without worrying about banks, this is the recommended way to do it.
+
 
 ```cpp
 get_single_gpio_status(bank, target_gpio)
