@@ -80,8 +80,6 @@ class mcp23017():
         if hasattr(self, 'gpio_output_map'):
             bank = 0
             for bank_map in self.gpio_output_map:
-                print 'address = ' + str(self.address)
-                print 'bank = ' + str(bank)
                 register_byte = 255
                 for channel in bank_map:
                     register_byte = register_byte ^ 1 << channel
@@ -91,11 +89,6 @@ class mcp23017():
                 bank = bank+1
 
     def set_output_register(self, bank, register_value):
-        print '---'
-        print bank
-        print self.address
-        print register_value
-        print '@@@'
         self.smbus.write_byte_data(self.address, bank, register_value)
         
     def set_bank_status(self, bank, status_value):
@@ -114,6 +107,14 @@ class mcp23017():
     def turn_on_relay(self, bank, target_relay, status = None):
         self.set_gpio_high(bank, target_relay, status)
         
+    def set_gpio_high_by_index(self, target_gpio):
+        bank = 1
+        while target_gpio > 7:
+            print target_gpio
+            target_gpio = target_gpio - 8
+            ++bank
+        self.set_gpio_high(bank, target_gpio)
+        
 # Need to check and make sure the registration bits are correct
     def set_gpio_low(self, bank, target_gpio, status = None):
         if(status == None):
@@ -125,6 +126,15 @@ class mcp23017():
 #pseudo method
     def turn_off_relay(self, bank, target_relay, status = None):
         self.set_gpio_low(bank, target_relay, status)
+        
+    def set_gpio_low_by_index(self, target_gpio):
+        bank = 1
+        while target_gpio > 7:
+            target_gpio = target_gpio - 8
+            bank = bank + 1
+        print '---'
+        print bank
+        self.toggle_gpio(bank, target_gpio)
         
     def toggle_gpio(self, bank, target_gpio):
         target_byte_value = 1 << target_gpio
@@ -138,11 +148,25 @@ class mcp23017():
 #pseudo method
     def toggle_relay(self, bank, target_relay):
         self.toggle_gpio(bank, target_relay)
+        
+    def toggle_gpio_by_index(self, target_gpio):
+        bank = 1
+        while target_gpio > 7:
+            target_gpio = target_gpio - 8
+            ++bank
+        self.toggle_gpio(bank, target_gpio)
     
     def get_single_gpio_status(self, bank, target_gpio):
         status = self.get_gpio_bank_status(bank)
         target_byte_value = 1 << target_gpio
         return (status & target_byte_value) != 0
+    
+    def get_single_gpio_status_by_index(self, target_gpio):
+        bank = 1
+        while target_gpio > 7:
+            target_gpio = target_gpio - 8
+            ++bank
+        self.get_single_gpio_status(bank, target_gpio)
         
     def get_gpio_bank_status(self, bank):
         return self.smbus.read_byte_data(self.address, MCP23017_REG_GPIOA+bank-1)
