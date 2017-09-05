@@ -36,7 +36,13 @@ while True :
     #turn on Relay at GPIO 0 in bank 1 on chip 1
     mcp23017_1.set_gpio_high(1, 0)
     time.sleep(.2)
-    #turn off Relay at GPIO 0 in bank 1 on chip 1
+    #turn on gpio at index 11 on chip 1
+    mcp23017_1.set_gpio_high_by_index(11)
+    time.sleep(.2)
+    #turn off gpio at index 11 on chip 1
+    mcp23017_1.set_gpio_low_by_index(11)
+    time.sleep(.2)
+    turn off Relay at GPIO 0 in bank 1 on chip 1
     mcp23017_1.set_gpio_low(1, 0)
     time.sleep(.2)
     #toggle Relay at GPIO 1 in bank 2 on chip 1
