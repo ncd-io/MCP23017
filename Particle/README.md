@@ -9,6 +9,7 @@ MCP23017 RelayController;
 
 >Set the address if the address jumpers are used, this is only necessary if you are using more than one chip, either multiple 16 channel boards, or a 32 channel board.
 >The method accepts 3 arguments that are mapped to the address pins as printed on the board: A0, A1, A2
+>If this is a 32 channel relay board, the A0 address jumper is ALWAYS set on the second chipset, so should never be set here on the first
 ```cpp
 RelayController.setAddress(1,0,0);
 ```
