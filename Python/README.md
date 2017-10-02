@@ -4,10 +4,10 @@
 
 This Library is intended for use with any MCP23017 Relay Controller or GPIO board available from ncd.io
 
-###Developer information
+### Developer information
 NCD has been designing and manufacturing computer control products since 1995.  We have specialized in hardware design and manufacturing of Relay controllers for 20 years.  We pride ourselves as being the industry leader of computer control relay products.  Our products are proven reliable and we are very excited to support Particle.  For more information on NCD please visit ncd.io
 
-###Requirements
+### Requirements
 - The Python SMBus Module: https://pypi.python.org/pypi/smbus-cffi/
 - An I2C connection to an MCP23017 Chip
 - Knowledge base for developing and programming with Python.
@@ -18,17 +18,15 @@ NCD has been designing and manufacturing computer control products since 1995.  
 ### How to use this library
 
 The libary must be imported into your application. Create an SMBus object that to utilize the I2C bus. Create an MCP23017 object and pass it the SMBus object to start to communicate to the chip. You can optionally pass in a kwarg to the object at instantiation that acts as an output map.
-This output map is a set of GPIO numbers that you would like to set as outputs. For example {0,1,2,3,6} would set channels
-0, 1, 2, 3, and 6 as outputs. Any channel with a relay on it should be configured as an output.
+This output map is an array of sets. Each set is made up of a list of GPIO numbers that you would like to set as outputs. For example {0,1,2,3,6} would set channels 0, 1, 2, 3, and 6 as outputs. Any channel with a relay on it should be configured as an output.
 
-###Public accessible methods
+### Publicly accessible methods
 ```cpp
 set_gpio_high(bank, target_gpio)
 ```
 >This function sets a GPIO to high in a particular bank. If this GPIO is configured as an output and has a relay on it the
 >Relay will be turned on. The bank argument passed is an integer, either 1 or 2. The target_gpio argument passed is an
 >ingteger from 0-7 with 0 being the first GPIO on the chain.
-
 
 ```cpp
 set_gpio_low(bank, target_gpio)
@@ -38,6 +36,15 @@ set_gpio_low(bank, target_gpio)
 >The bank argument passed is an integer, either 1 or 2.
 >The target_gpio argument passed is an ingteger from 0-7 with 0 being the first GPIO on the chain.
 
+```cpp
+set_bank_status(bank, status_value)
+```
+>This function sets the status of all GPIOs in a particular bank. If this GPIO is configured as an output and has a relay on >it the Relay will be turned on.
+
+>The bank argument passed is an integer, either 1 or 2. The status_value is a value from 0-255. Each bit in this byte value >indicates a GPIO number. So to set GPIO 0 and 2 High you would pass this statement 5 because the bits would evaluate to >00000101.
+
+>Any bit that isn't a 1 will be set to low. If you would simply like to activate multiple relays or GPIOs at the same time >you can check the bank status and then OR (|), AND (&), or use a bitwise exlusive (^) between the current status and the
+>value you would like to set to determine what status you want to pass. Doing this will leave relays that are currently doing something to stay in the state they are on while you manipulate the desired relays simultaneously.
 
 ```cpp
 toggle_gpio(bank, target_gpio)
@@ -78,6 +85,11 @@ get_single_gpio_status(bank, target_gpio)
 >The bank argument passed is an integer, either 1 or 2.
 >The target_gpio argument passed is an ingteger from 0-7 with 0 being the first GPIO on the chain.
 
+```cpp
+get_single_gpio_status_by_index(target_gpio)
+```
+>A call to this method will get the status of a singular gpio.
+>The target_gpio argument passed is an ingteger from 0-15 with 0 being the first GPIO on the chain.
 
 ```cpp
 get_gpio_bank_status(bank)
