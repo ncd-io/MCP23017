@@ -1,7 +1,6 @@
 # Distributed with a free-will license.
 # Use it any way you want, profit or free, provided it fits in the licenses of its associated works.
-# MCP23017_REG_I2CR16G5LE
-# This code is designed to work with the MCP23017_REG_I2CR16G5LE_10A I2C Mini Module available from ControlEverything.com.
+# This code is designed to work with any MCP23017 Board available from ncd.io.
 
 # I2C address of the device
 MCP23017_DEFAULT_ADDRESS                = 0x20
@@ -73,9 +72,9 @@ class mcp23017():
         #set address to default if not passed
         if not hasattr(self, 'address'):
             self.address = MCP23017_DEFAULT_ADDRESS
-        
+
         self.smbus = smbus
-        
+
         #we only need to know which are outputs as the chip sets all GPIOs as inputs by default for safety reasons.
         if hasattr(self, 'gpio_output_map'):
             bank = 0
@@ -83,22 +82,21 @@ class mcp23017():
                 register_byte = 255
                 for channel in bank_map:
                     register_byte = register_byte ^ 1 << channel
-                    
+
                 if(register_byte != 255):
                     self.set_output_register(bank, register_byte)
                 bank = bank+1
 
     def set_output_register(self, bank, register_value):
         self.smbus.write_byte_data(self.address, bank, register_value)
-        
+
     def set_bank_status(self, bank, status_value):
-        dostuff()
-        
-# Need to check and make sure the registration bits are correct
+        self.smbus.write_byte_data(self.address, MCP23017_REG_GPIOA+bank-1, status_value)
+
     def set_gpio_high(self, bank, target_gpio, status = None):
         if(status == None):
             status = self.get_gpio_bank_status(bank)
-            
+
         target_byte_value = 1 << target_gpio
         new_status_byte = status | target_byte_value
         self.smbus.write_byte_data(self.address, MCP23017_REG_GPIOA+bank-1, new_status_byte)
@@ -106,16 +104,14 @@ class mcp23017():
 #pseudo method
     def turn_on_relay(self, bank, target_relay, status = None):
         self.set_gpio_high(bank, target_relay, status)
-        
+
     def set_gpio_high_by_index(self, target_gpio):
         bank = 1
         while target_gpio > 7:
-            print target_gpio
             target_gpio = target_gpio - 8
             ++bank
         self.set_gpio_high(bank, target_gpio)
-        
-# Need to check and make sure the registration bits are correct
+
     def set_gpio_low(self, bank, target_gpio, status = None):
         if(status == None):
             status = self.get_gpio_bank_status(bank)
@@ -126,16 +122,14 @@ class mcp23017():
 #pseudo method
     def turn_off_relay(self, bank, target_relay, status = None):
         self.set_gpio_low(bank, target_relay, status)
-        
+
     def set_gpio_low_by_index(self, target_gpio):
         bank = 1
         while target_gpio > 7:
             target_gpio = target_gpio - 8
             bank = bank + 1
-        print '---'
-        print bank
         self.toggle_gpio(bank, target_gpio)
-        
+
     def toggle_gpio(self, bank, target_gpio):
         target_byte_value = 1 << target_gpio
         status = self.get_gpio_bank_status(bank)
@@ -144,36 +138,36 @@ class mcp23017():
             self.set_gpio_low(bank, target_gpio, status)
         else:
             self.set_gpio_high(bank, target_gpio, status)
-    
+
 #pseudo method
     def toggle_relay(self, bank, target_relay):
         self.toggle_gpio(bank, target_relay)
-        
+
     def toggle_gpio_by_index(self, target_gpio):
         bank = 1
         while target_gpio > 7:
             target_gpio = target_gpio - 8
             ++bank
         self.toggle_gpio(bank, target_gpio)
-    
+
     def get_single_gpio_status(self, bank, target_gpio):
         status = self.get_gpio_bank_status(bank)
         target_byte_value = 1 << target_gpio
         return (status & target_byte_value) != 0
-    
+
     def get_single_gpio_status_by_index(self, target_gpio):
         bank = 1
         while target_gpio > 7:
             target_gpio = target_gpio - 8
             ++bank
         self.get_single_gpio_status(bank, target_gpio)
-        
+
     def get_gpio_bank_status(self, bank):
         return self.smbus.read_byte_data(self.address, MCP23017_REG_GPIOA+bank-1)
-    
+
     def get_gpio_bank_resistor_settings(self, bank):
         return self.smbus.read_byte_data(self.address, MCP23017_REG_GPPUA+bank-1)
-    
+
     def pull_up_gpio(self, bank, target_gpio):
         target_byte_value = 1 << target_gpio
         status = self.get_gpio_bank_resistor_settings(bank-1)
