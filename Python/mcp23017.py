@@ -116,7 +116,7 @@ class mcp23017():
         if(status == None):
             status = self.get_gpio_bank_status(bank)
         target_byte_value = 1 << target_gpio
-        new_status_byte = status ^ target_byte_value
+        new_status_byte = status & ~target_byte_value
         self.smbus.write_byte_data(self.address, MCP23017_REG_GPIOA+bank-1, new_status_byte)
 
 #pseudo method
